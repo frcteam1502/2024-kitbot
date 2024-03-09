@@ -12,15 +12,12 @@ import com.ctre.phoenix6.controls.Follower;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.simulation.PWMSim;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
 
 /**
@@ -48,13 +45,13 @@ public class Robot extends TimedRobot {
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
-    //m_FL.set(ControlMode.PercentOutput, kDefaultPeriod);                                                                                                                        
+    //m_FL.set(ControlMode.PercentOutput, kDefaultPeriod);
     //m_FR.set(ControlMode.PercentOutput, kDefaultPeriod);
     m_BL.follow(m_FL);
     m_BR.follow(m_FR);
-            
+    
   
-    BottemShooter.follow(TopShooter);
+    //BottemShooter.follow(TopShooter);
     //TopShooter.set(0.7);
     m_FL.setInverted(true);
     m_BL.setInverted(true);
@@ -75,12 +72,12 @@ public class Robot extends TimedRobot {
     
     //Right = 6, Left = 5
     if(driveControll.getRawButton(5) == true && driveControll.getRawButton(6) == false){
-    // BottemShooter.follow(TopShooter) = false;
+     //BottemShooter.follow(TopShooter) = false;
       TopShooter.set(1.0);
-      //Commands.waitSeconds(double)/frc2::cmd::Wait(units::second_t);
-      //BottemShooter.WaitUntilCommand.Timer.delay(0.5);
+
       //BottemShooter.follow(TopShooter) = true;
-      //TopShooter.set(1.0);
+      //TopShooter.set(1.0);4
+      
       //BottemShooter.set(0.4);
       //System.out.println(TopShooter.get());
     }
