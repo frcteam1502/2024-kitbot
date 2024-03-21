@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import javax.swing.plaf.TreeUI;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 //import com.ctre.phoenix.motorcontrol.can.VictorSPX;
@@ -72,7 +74,35 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     stick_r = driveControll.getRawAxis(5);
     stick_l = driveControll.getRawAxis(1);
-    
+
+    m_FL.set(stick_l*0.8);
+    m_FR.set(stick_r*0.82);
+
+    if (driveControll.getRawButton(1) == true); {
+    m_FL.set(stick_l*0.5);
+    m_FR.set(stick_r*0.52);
+      
+    }
+    else if(driveControll.getRawButton(1) == false) {
+      m_FL.set(stick_l*0.8);
+      m_FR.set(stick_r*0.82);
+    }
+
+
+
+
+if (driveControll.getRawButton(1) == true) {
+  
+} else(driveControll.getRawButton(1) == false) {
+  
+}
+
+
+
+
+
+
+
     //Right = 6, Left = 5
     if(driveControll.getRawButton(5) == true && driveControll.getRawButton(6) == false){
     // BottemShooter.follow(TopShooter) = false;
@@ -99,7 +129,7 @@ public class Robot extends TimedRobot {
     //System.out.println("Back Left Speed: " + m_BL.get());
     //System.out.println("Back Right Speed: " + m_BR.get());
     
-    m_myRobot.tankDrive(stick_l, stick_r);
-
+    //m_myRobot.tankDrive(stick_l*0.3 stick_r*0.3);
+    
   }
 }
