@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.*;
+import edu.wpi.first.cscore.UsbCamera;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 //import com.ctre.phoenix.motorcontrol.can.VictorSPX;

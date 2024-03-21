@@ -78,24 +78,15 @@ public class Robot extends TimedRobot {
     m_FL.set(stick_l*0.8);
     m_FR.set(stick_r*0.82);
 
-    if (driveControll.getRawButton(1) == true); {
-    m_FL.set(stick_l*0.5);
-    m_FR.set(stick_r*0.52);
+    //if (driveControll.getRawButton(1) == true); {
+    //m_FL.set(stick_l*0.5);
+    //m_FR.set(stick_r*0.52);
       
-    }
-    else if(driveControll.getRawButton(1) == false) {
-      m_FL.set(stick_l*0.8);
-      m_FR.set(stick_r*0.82);
-    }
-
-
-
-
-if (driveControll.getRawButton(1) == true) {
-  
-} else(driveControll.getRawButton(1) == false) {
-  
-}
+    
+//    } else if(driveControll.getRawButton(1) == false) {
+  //    m_FL.set(stick_l*0.8);
+    //  m_FR.set(stick_r*0.82);
+    //}
 
 
 
@@ -121,6 +112,19 @@ if (driveControll.getRawButton(1) == true) {
     else{
       TopShooter.set(0); 
       //System.out.println(TopShooter.get());
+    }
+
+
+
+if(driveControll.getRawButton(1) == true){
+    
+      m_FL.set(stick_l*0.25);
+      m_FR.set(stick_r*0.27);
+      
+    }
+    else if(driveControll.getRawButton(1) == false){
+       m_FL.set(stick_l*0.8);
+      m_FR.set(stick_r*0.82);
     }
 
 
