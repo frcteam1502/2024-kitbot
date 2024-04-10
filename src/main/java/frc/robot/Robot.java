@@ -9,8 +9,11 @@ import javax.swing.plaf.TreeUI;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 //import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.ctre.phoenix6.controls.Follower;
+import com.fasterxml.jackson.databind.deser.std.StringCollectionDeserializer;
+import com.fasterxml.jackson.databind.ser.std.ToEmptyObjectSerializer;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -20,8 +23,11 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.PWMSim;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
 
@@ -56,7 +62,7 @@ public class Robot extends TimedRobot {
     m_BR.follow(m_FR);
             
   
-    BottemShooter.follow(TopShooter);
+   // BottemShooter.follow(TopShooter);
     //TopShooter.set(0.7);
     m_FL.setInverted(true);
     m_BL.setInverted(true);
@@ -89,28 +95,35 @@ public class Robot extends TimedRobot {
     //}
 
 
-
-
-
-
-
     //Right = 6, Left = 5
     if(driveControll.getRawButton(5) == true && driveControll.getRawButton(6) == false){
-    // BottemShooter.follow(TopShooter) = false;
-      TopShooter.set(1.0);
-      //Commands.waitSeconds(double)/frc2::cmd::Wait(units::second_t);
-      //BottemShooter.WaitUntilCommand.Timer.delay(0.5);
-      //BottemShooter.follow(TopShooter) = true;
-      //TopShooter.set(1.0);
-      //BottemShooter.set(0.4);
+
+      //BottemShooter.follow(TopShooter) = false;
+
+     // Timer.delay(20);
+      final Timer waitTimer = new Timer();
+      waitTimer.reset();
+      waitTimer.start();
+      TopShooter.set(0.1);
+      if(waitTimer.get() > 1.0){
+        BottemShooter.set(0.1);
+      }
+
+
+       //BottemShooter.follow(TopShooter);
       //System.out.println(TopShooter.get());
     }
     else if(driveControll.getRawButton(6) == true && driveControll.getRawButton(5) == false){
+
+      //BottemShooter.follow(TopShooter);
+
       TopShooter.set(-0.2);
+
       //System.out.println(TopShooter.get());
     }
     else{
       TopShooter.set(0); 
+      BottemShooter.set(0);
       //System.out.println(TopShooter.get());
     }
 
@@ -136,4 +149,6 @@ if(driveControll.getRawButton(1) == true){
     //m_myRobot.tankDrive(stick_l*0.3 stick_r*0.3);
     
   }
+
 }
+
