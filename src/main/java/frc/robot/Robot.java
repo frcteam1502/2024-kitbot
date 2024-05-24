@@ -50,6 +50,8 @@ public class Robot extends TimedRobot {
   //Shooter Motors: 4 = top, 3 = bottom
   private final CANSparkMax TopShooter = new CANSparkMax(4, MotorType.kBrushless);
   private final CANSparkMax BottemShooter = new CANSparkMax(3, MotorType.kBrushless);
+  private final CANSparkMax IntakeMotor = new CANSparkMax(5, MotorType.kBrushless);
+  final Timer waitTimer = new Timer();
 
   @Override
   public void robotInit() {
@@ -94,28 +96,25 @@ public class Robot extends TimedRobot {
     //  m_FR.set(stick_r*0.82);
     //}
 
-
     //Right = 6, Left = 5
+    // Make note go SHOOMP
     if(driveControll.getRawButton(5) == true && driveControll.getRawButton(6) == false){
 
-      //BottemShooter.follow(TopShooter) = false;
-
-     // Timer.delay(20);
-      final Timer waitTimer = new Timer();
-      waitTimer.reset();
+    Timer.delay(.75); 
+     System.out.println(waitTimer.get() * 10000);
+     if(waitTimer.get() * 10000 == 0.0){
       waitTimer.start();
-      TopShooter.set(0.1);
-      if(waitTimer.get() > 1.0){
-        BottemShooter.set(0.1);
+     }
+
+      TopShooter.set(1);
+      if(waitTimer.hasElapsed(1.0)){
+        BottemShooter.set(1);
+        IntakeMotor.set(1);
       }
-
-
-       //BottemShooter.follow(TopShooter);
-      //System.out.println(TopShooter.get());
+      
     }
     else if(driveControll.getRawButton(6) == true && driveControll.getRawButton(5) == false){
 
-      //BottemShooter.follow(TopShooter);
 
       TopShooter.set(-0.2);
 
@@ -124,10 +123,12 @@ public class Robot extends TimedRobot {
     else{
       TopShooter.set(0); 
       BottemShooter.set(0);
+      waitTimer.stop();
+      waitTimer.reset();
       //System.out.println(TopShooter.get());
     }
 
-
+// Make Churro move forward/backward/turnLeft/turnRight
 
 if(driveControll.getRawButton(1) == true){
     
@@ -141,6 +142,17 @@ if(driveControll.getRawButton(1) == true){
     }
 
 
+    //Set up intake to move note into robot
+
+    if (driveControll.getRawButton(5) == true) {
+      IntakeMotor.set(1);
+
+    }
+    else if (driveControll.getRawButton(5) == false) {
+     IntakeMotor.set(0); 
+    }
+
+
     //System.out.println("Front Left Speed: " + m_FL.get());
     //System.out.println("Front Right Speed: " + m_FR.get());
     //System.out.println("Back Left Speed: " + m_BL.get());
@@ -151,4 +163,3 @@ if(driveControll.getRawButton(1) == true){
   }
 
 }
-
