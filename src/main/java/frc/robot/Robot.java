@@ -15,6 +15,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.fasterxml.jackson.databind.deser.std.StringCollectionDeserializer;
 import com.fasterxml.jackson.databind.ser.std.ToEmptyObjectSerializer;
 
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -27,6 +28,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.PWMSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
@@ -50,8 +52,14 @@ public class Robot extends TimedRobot {
   //Shooter Motors: 4 = top, 3 = bottom
   private final CANSparkMax TopShooter = new CANSparkMax(4, MotorType.kBrushless);
   private final CANSparkMax BottemShooter = new CANSparkMax(3, MotorType.kBrushless);
-  private final CANSparkMax IntakeMotor = new CANSparkMax(5, MotorType.kBrushless);
+  private final CANSparkMax IntakeMotor = new CANSparkMax(14, MotorType.kBrushless);
+  private final CANSparkMax IndexMotor = new CANSparkMax(16, MotorType.kBrushless);
+  private final CANSparkMax RollarMotor = new CANSparkMax(5, MotorType.kBrushless);
   final Timer waitTimer = new Timer();
+
+
+
+
 
   @Override
   public void robotInit() {
@@ -68,6 +76,7 @@ public class Robot extends TimedRobot {
     //TopShooter.set(0.7);
     m_FL.setInverted(true);
     m_BL.setInverted(true);
+    RollarMotor.setInverted(true);
 
     m_myRobot = new DifferentialDrive(m_FL, m_FR);
     driveControll = new Joystick(0);
@@ -77,6 +86,8 @@ public class Robot extends TimedRobot {
     //m_FR.set(0.4);
   
   }
+
+  
 
   @Override
   public void teleopPeriodic() {
@@ -144,12 +155,27 @@ if(driveControll.getRawButton(1) == true){
 
     //Set up intake to move note into robot
 
-    if (driveControll.getRawButton(5) == true) {
-      IntakeMotor.set(1);
+    if (driveControll.getRawButton(4) == true) {
+      IntakeMotor.set(0.25);
+      RollarMotor.set(0.25);
+   
 
     }
-    else if (driveControll.getRawButton(5) == false) {
-     IntakeMotor.set(0); 
+    else if (driveControll.getRawButton(4) == false) {
+     IntakeMotor.set(0);
+      RollarMotor.set(0);
+   
+    }
+
+
+    if (driveControll.getRawButton(2) == true) {
+   
+      IndexMotor.set(0.5);
+
+    }
+    else if (driveControll.getRawButton(2) == false) {
+    
+      IndexMotor.set(0); 
     }
 
 
