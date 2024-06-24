@@ -9,13 +9,14 @@ import javax.swing.plaf.TreeUI;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 //import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.ctre.phoenix6.controls.Follower;
 import com.fasterxml.jackson.databind.deser.std.StringCollectionDeserializer;
 import com.fasterxml.jackson.databind.ser.std.ToEmptyObjectSerializer;
+//import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -42,6 +43,8 @@ public class Robot extends TimedRobot {
   private Joystick driveControll;
   public  double stick_r;
   public double stick_l; 
+  private Joystick operator;
+
 
   private final WPI_VictorSPX m_FL = new WPI_VictorSPX(18);
   private final WPI_VictorSPX m_BL = new WPI_VictorSPX(19);
@@ -77,9 +80,12 @@ public class Robot extends TimedRobot {
     m_FL.setInverted(true);
     m_BL.setInverted(true);
     RollarMotor.setInverted(true);
+    IntakeMotor.setInverted(true);
 
     m_myRobot = new DifferentialDrive(m_FL, m_FR);
     driveControll = new Joystick(0);
+    operator = new Joystick(1);
+
     //m_BL.set(0.5);
     //m_BR.set(0.5);
     //m_FL.set(0.4);
@@ -87,7 +93,7 @@ public class Robot extends TimedRobot {
   
   }
 
-  
+
 
   @Override
   public void teleopPeriodic() {
@@ -109,7 +115,7 @@ public class Robot extends TimedRobot {
 
     //Right = 6, Left = 5
     // Make note go SHOOMP
-    if(driveControll.getRawButton(5) == true && driveControll.getRawButton(6) == false){
+    if(operator.getRawButton(5) == true && driveControll.getRawButton(6) == false){
 
     Timer.delay(.75); 
      System.out.println(waitTimer.get() * 10000);
@@ -120,20 +126,23 @@ public class Robot extends TimedRobot {
       TopShooter.set(1);
       if(waitTimer.hasElapsed(1.0)){
         BottemShooter.set(1);
-        IntakeMotor.set(1);
+         IndexMotor.set(0.5);
       }
       
     }
-    else if(driveControll.getRawButton(6) == true && driveControll.getRawButton(5) == false){
+    //make note come in
+    else if(operator.getRawButton(6) == true && driveControll.getRawButton(5) == false){
 
 
       TopShooter.set(-0.2);
+      BottemShooter.set(-0.2);
 
       //System.out.println(TopShooter.get());
     }
     else{
       TopShooter.set(0); 
       BottemShooter.set(0);
+       IndexMotor.set(0);
       waitTimer.stop();
       waitTimer.reset();
       //System.out.println(TopShooter.get());
@@ -155,29 +164,45 @@ if(driveControll.getRawButton(1) == true){
 
     //Set up intake to move note into robot
 
-    if (driveControll.getRawButton(4) == true) {
+    if (operator.getRawButton(4) == true) {
       IntakeMotor.set(0.25);
       RollarMotor.set(0.25);
    
 
     }
-    else if (driveControll.getRawButton(4) == false) {
+    else if (operator.getRawButton(4) == false) {
      IntakeMotor.set(0);
       RollarMotor.set(0);
    
     }
 
 
-    if (driveControll.getRawButton(2) == true) {
+    if (operator.getRawButton(2) == true) {
    
       IndexMotor.set(0.5);
 
     }
-    else if (driveControll.getRawButton(2) == false) {
+    else if (operator.getRawButton(3) == true) {
     
+      IndexMotor.set(-0.5); 
+    }
+    else{
       IndexMotor.set(0); 
     }
 
+    //AMP CONTROLL
+
+     if (operator.getRawButton(1) == true) {
+    TopShooter.set(0.1);
+      BottemShooter.set(0.1);
+   
+
+    }
+    else if (operator.getRawButton(1) == false) {
+     TopShooter.set(0);
+      BottemShooter.set(0);
+   
+    }
 
     //System.out.println("Front Left Speed: " + m_FL.get());
     //System.out.println("Front Right Speed: " + m_FR.get());
