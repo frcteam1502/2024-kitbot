@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.deser.std.StringCollectionDeserializer;
 import com.fasterxml.jackson.databind.ser.std.ToEmptyObjectSerializer;
 //import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Joystick;
@@ -32,7 +33,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-
+import frc.robot.Subsystems.DriveSubsystem;
+;
 
 /**
  * This is a demo program showing the use of the DifferentialDrive class, specifically it contains
@@ -60,7 +62,7 @@ public class Robot extends TimedRobot {
   private final CANSparkMax RollarMotor = new CANSparkMax(5, MotorType.kBrushless);
   final Timer waitTimer = new Timer();
 
-
+private final DriveSubsystem driveSubsystem = new DriveSubsystem();
 
 
 
@@ -86,6 +88,8 @@ public class Robot extends TimedRobot {
     m_myRobot = new DifferentialDrive(m_FL, m_FR);
     driveControll = new Joystick(0);
     operator = new Joystick(1);
+
+    var DriveSubsystem = new DriveSubsystem();
 
     //m_BL.set(0.5);
     //m_BR.set(0.5);
@@ -154,8 +158,8 @@ public class Robot extends TimedRobot {
 if(driveControll.getRawButton(1) == true){
     
       m_FL.set(stick_l*0.25);
-      m_FR.set(stick_r*0.27);
-      
+      //m_FR.set(stick_r*0.27);
+      this.driveSubsystem.drive(new ChassisSpeeds(stick_l*0.25, 0,0));
     }
     else if(driveControll.getRawButton(1) == false){
        m_FL.set(stick_l*0.8);
