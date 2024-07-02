@@ -62,7 +62,7 @@ public class Robot extends TimedRobot {
   private final CANSparkMax RollarMotor = new CANSparkMax(5, MotorType.kBrushless);
   final Timer waitTimer = new Timer();
 
-private final DriveSubsystem driveSubsystem = new DriveSubsystem();
+private final DriveSubsystem driveSubsystem = new DriveSubsystem(m_FL, m_FR);
 
 
 
@@ -89,7 +89,7 @@ private final DriveSubsystem driveSubsystem = new DriveSubsystem();
     driveControll = new Joystick(0);
     operator = new Joystick(1);
 
-    var DriveSubsystem = new DriveSubsystem();
+    //var DriveSubsystem = new DriveSubsystem(m_FL, m_FR);
 
     //m_BL.set(0.5);
     //m_BR.set(0.5);
