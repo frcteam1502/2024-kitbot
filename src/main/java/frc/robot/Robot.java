@@ -123,7 +123,6 @@ private final DriveSubsystem driveSubsystem = new DriveSubsystem(m_FL, m_FR);
     SmartDashboard.putNumber("Left Velocity", m_leftEncoder.getRate());
     SmartDashboard.putNumber("Right Distance", m_rightEncoder.getDistance());
     SmartDashboard.putNumber("Right Velocity", m_rightEncoder.getRate());
-
     stick_r = driveControll.getRawAxis(5);
     stick_l = driveControll.getRawAxis(1);
 
