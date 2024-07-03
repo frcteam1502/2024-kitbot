@@ -16,7 +16,9 @@ import com.fasterxml.jackson.databind.ser.std.ToEmptyObjectSerializer;
 //import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -28,6 +30,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.PWMSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -61,6 +64,14 @@ public class Robot extends TimedRobot {
   private final CANSparkMax IndexMotor = new CANSparkMax(16, MotorType.kBrushless);
   private final CANSparkMax RollarMotor = new CANSparkMax(5, MotorType.kBrushless);
   final Timer waitTimer = new Timer();
+ 
+
+
+ 
+  private final Encoder m_leftEncoder  = new Encoder(0,1); 
+  private final Encoder m_rightEncoder  = new Encoder(2,3); 
+  private static int PULSES_PER_ROTATION = 2048;
+private static double WHEEL_DIAMITER = 6.0;
 
 private final DriveSubsystem driveSubsystem = new DriveSubsystem(m_FL, m_FR);
 
@@ -89,6 +100,12 @@ private final DriveSubsystem driveSubsystem = new DriveSubsystem(m_FL, m_FR);
     driveControll = new Joystick(0);
     operator = new Joystick(1);
 
+     //this.m_leftEncoder = new Encoder(0,1); 
+    this.m_leftEncoder.setDistancePerPulse(Units.inchesToMeters(WHEEL_DIAMITER*Math.PI)/ PULSES_PER_ROTATION);
+    //this.m_rightEncoder = new Encoder(2,3);
+    this.m_rightEncoder.setDistancePerPulse(Units.inchesToMeters(WHEEL_DIAMITER*Math.PI)/ PULSES_PER_ROTATION);
+
+
     //var DriveSubsystem = new DriveSubsystem(m_FL, m_FR);
 
     //m_BL.set(0.5);
@@ -102,6 +119,11 @@ private final DriveSubsystem driveSubsystem = new DriveSubsystem(m_FL, m_FR);
 
   @Override
   public void teleopPeriodic() {
+    SmartDashboard.putNumber("Left Distance", m_leftEncoder.getDistance());
+    SmartDashboard.putNumber("Left Velocity", m_leftEncoder.getRate());
+    SmartDashboard.putNumber("Right Distance", m_rightEncoder.getDistance());
+    SmartDashboard.putNumber("Right Velocity", m_rightEncoder.getRate());
+
     stick_r = driveControll.getRawAxis(5);
     stick_l = driveControll.getRawAxis(1);
 
