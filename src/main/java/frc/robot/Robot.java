@@ -4,38 +4,18 @@
 
 package frc.robot;
 
-import javax.swing.plaf.TreeUI;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FollowerType;
 //import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.ctre.phoenix6.controls.Follower;
-import com.fasterxml.jackson.databind.deser.std.StringCollectionDeserializer;
-import com.fasterxml.jackson.databind.ser.std.ToEmptyObjectSerializer;
-//import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.simulation.PWMSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Subsystems.DriveSubsystem;
 ;
 
@@ -44,38 +24,46 @@ import frc.robot.Subsystems.DriveSubsystem;
  * the code necessary to operate a robot with tank drive.
  */
 public class Robot extends TimedRobot {                                                                                                                                                                                                                                                                                                                                     
-  private DifferentialDrive m_myRobot;
-  private Joystick driveControll;
-  public  double stick_r;
-  public double stick_l; 
-  private Joystick operator;
+  private final DriveSubsystem m_driveSubsystem;
+  private final DifferentialDrive m_myRobot;
+  
+  private final Timer waitTimer = new Timer();
+  private final Joystick driveControll;
+  private final Joystick operator;
 
+  private final WPI_VictorSPX m_FL;
+  private final WPI_VictorSPX m_BL;
+  private final WPI_VictorSPX m_FR;
+  private final WPI_VictorSPX m_BR;
 
-  private final WPI_VictorSPX m_FL = new WPI_VictorSPX(18);
-  private final WPI_VictorSPX m_BL = new WPI_VictorSPX(19);
-
-  private final WPI_VictorSPX m_FR = new WPI_VictorSPX(2);
-  private final WPI_VictorSPX m_BR = new WPI_VictorSPX(1);
-
-  //Shooter Motors: 4 = top, 3 = bottom
-  private final CANSparkMax TopShooter = new CANSparkMax(4, MotorType.kBrushless);
-  private final CANSparkMax BottemShooter = new CANSparkMax(3, MotorType.kBrushless);
-  private final CANSparkMax IntakeMotor = new CANSparkMax(14, MotorType.kBrushless);
-  private final CANSparkMax IndexMotor = new CANSparkMax(16, MotorType.kBrushless);
-  private final CANSparkMax RollarMotor = new CANSparkMax(5, MotorType.kBrushless);
-  final Timer waitTimer = new Timer();
+  private final CANSparkMax TopShooter;
+  private final CANSparkMax BottemShooter;
+  private final CANSparkMax IntakeMotor;
+  private final CANSparkMax IndexMotor;
+  private final CANSparkMax RollarMotor;
  
+  
+  double stick_r;
+  double stick_l; 
 
 
- 
-  private final Encoder m_leftEncoder  = new Encoder(0,1); 
-  private final Encoder m_rightEncoder  = new Encoder(2,3); 
-  private static int PULSES_PER_ROTATION = 2048;
-private static double WHEEL_DIAMITER = 6.0;
-
-private final DriveSubsystem driveSubsystem = new DriveSubsystem(m_FL, m_FR);
-
-
+  public Robot() {
+    // LEFT side
+    m_FL = new WPI_VictorSPX(18);
+    m_BL = new WPI_VictorSPX(19);
+    // RIGHT side
+    m_FR = new WPI_VictorSPX(2);
+    m_BR = new WPI_VictorSPX(1);
+    TopShooter = new CANSparkMax(4, MotorType.kBrushless);
+    BottemShooter = new CANSparkMax(3, MotorType.kBrushless);
+    IntakeMotor = new CANSparkMax(14, MotorType.kBrushless);
+    IndexMotor = new CANSparkMax(16, MotorType.kBrushless);
+    RollarMotor = new CANSparkMax(5, MotorType.kBrushless);
+    m_driveSubsystem = new DriveSubsystem(m_FL, m_FR);
+    m_myRobot = new DifferentialDrive(m_FL, m_FR);
+    driveControll = new Joystick(0);
+    operator = new Joystick(1);
+  }
 
   @Override
   public void robotInit() {
@@ -96,17 +84,6 @@ private final DriveSubsystem driveSubsystem = new DriveSubsystem(m_FL, m_FR);
     RollarMotor.setInverted(true);
     IntakeMotor.setInverted(true);
 
-    m_myRobot = new DifferentialDrive(m_FL, m_FR);
-    driveControll = new Joystick(0);
-    operator = new Joystick(1);
-
-     //this.m_leftEncoder = new Encoder(0,1); 
-    this.m_leftEncoder.setDistancePerPulse(Units.inchesToMeters(WHEEL_DIAMITER*Math.PI)/ PULSES_PER_ROTATION);
-    //this.m_rightEncoder = new Encoder(2,3);
-    this.m_rightEncoder.setDistancePerPulse(Units.inchesToMeters(WHEEL_DIAMITER*Math.PI)/ PULSES_PER_ROTATION);
-
-
-    //var DriveSubsystem = new DriveSubsystem(m_FL, m_FR);
 
     //m_BL.set(0.5);
     //m_BR.set(0.5);
@@ -119,10 +96,6 @@ private final DriveSubsystem driveSubsystem = new DriveSubsystem(m_FL, m_FR);
 
   @Override
   public void teleopPeriodic() {
-    SmartDashboard.putNumber("Left Distance", m_leftEncoder.getDistance());
-    SmartDashboard.putNumber("Left Velocity", m_leftEncoder.getRate());
-    SmartDashboard.putNumber("Right Distance", m_rightEncoder.getDistance());
-    SmartDashboard.putNumber("Right Velocity", m_rightEncoder.getRate());
     stick_r = driveControll.getRawAxis(5);
     stick_l = driveControll.getRawAxis(1);
 
@@ -134,8 +107,8 @@ private final DriveSubsystem driveSubsystem = new DriveSubsystem(m_FL, m_FR);
     //m_FR.set(stick_r*0.52);
       
     
-//    } else if(driveControll.getRawButton(1) == false) {
-  //    m_FL.set(stick_l*0.8);
+    //  } else if(driveControll.getRawButton(1) == false) {
+    //  m_FL.set(stick_l*0.8);
     //  m_FR.set(stick_r*0.82);
     //}
 
@@ -143,44 +116,41 @@ private final DriveSubsystem driveSubsystem = new DriveSubsystem(m_FL, m_FR);
     // Make note go SHOOMP
     if(operator.getRawButton(5) == true && driveControll.getRawButton(6) == false){
 
-    Timer.delay(.75); 
-     System.out.println(waitTimer.get() * 10000);
-     if(waitTimer.get() * 10000 == 0.0){
-      waitTimer.start();
-     }
+      Timer.delay(.75); 
+      System.out.println(waitTimer.get() * 10000);
+      if(waitTimer.get() * 10000 == 0.0){
+        waitTimer.start();
+      }
 
       TopShooter.set(1);
       if(waitTimer.hasElapsed(1.0)){
         BottemShooter.set(1);
-         IndexMotor.set(0.5);
+        IndexMotor.set(0.5);
       }
       
     }
     //make note come in
     else if(operator.getRawButton(6) == true && driveControll.getRawButton(5) == false){
-
-
       TopShooter.set(-0.2);
       BottemShooter.set(-0.2);
-
       //System.out.println(TopShooter.get());
     }
     else{
       TopShooter.set(0); 
       BottemShooter.set(0);
-       IndexMotor.set(0);
+      IndexMotor.set(0);
       waitTimer.stop();
       waitTimer.reset();
       //System.out.println(TopShooter.get());
     }
 
-// Make Churro move forward/backward/turnLeft/turnRight
+    // Make Churro move forward/backward/turnLeft/turnRight
 
-if(driveControll.getRawButton(1) == true){
+    if(driveControll.getRawButton(1) == true){
     
       m_FL.set(stick_l*0.25);
       //m_FR.set(stick_r*0.27);
-      this.driveSubsystem.drive(new ChassisSpeeds(stick_l*0.25, 0,0));
+      this.m_driveSubsystem.drive(new ChassisSpeeds(stick_l*0.25, 0,0));
     }
     else if(driveControll.getRawButton(1) == false){
        m_FL.set(stick_l*0.8);
@@ -193,23 +163,16 @@ if(driveControll.getRawButton(1) == true){
     if (operator.getRawButton(4) == true) {
       IntakeMotor.set(0.25);
       RollarMotor.set(0.25);
-   
-
     }
     else if (operator.getRawButton(4) == false) {
-     IntakeMotor.set(0);
+      IntakeMotor.set(0);
       RollarMotor.set(0);
-   
     }
-
 
     if (operator.getRawButton(2) == true) {
-   
       IndexMotor.set(0.5);
-
     }
     else if (operator.getRawButton(3) == true) {
-    
       IndexMotor.set(-0.5); 
     }
     else{
@@ -218,16 +181,13 @@ if(driveControll.getRawButton(1) == true){
 
     //AMP CONTROLL
 
-     if (operator.getRawButton(1) == true) {
-    TopShooter.set(0.1);
+    if (operator.getRawButton(1) == true) {
+      TopShooter.set(0.1);
       BottemShooter.set(0.1);
-   
-
     }
     else if (operator.getRawButton(1) == false) {
-     TopShooter.set(0);
-      BottemShooter.set(0);
-   
+      TopShooter.set(0);
+      BottemShooter.set(0);   
     }
 
     //System.out.println("Front Left Speed: " + m_FL.get());
@@ -236,7 +196,7 @@ if(driveControll.getRawButton(1) == true){
     //System.out.println("Back Right Speed: " + m_BR.get());
     
     //m_myRobot.tankDrive(stick_l*0.3 stick_r*0.3);
-    
+    SmartDashboard.putData(m_myRobot);
   }
 
 }
