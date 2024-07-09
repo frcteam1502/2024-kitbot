@@ -26,7 +26,7 @@ public class DriveSubsystem extends SubsystemBase {
    
   private final WPI_VictorSPX m_leftMotor;
   private final WPI_VictorSPX m_rightMotor;
-  private final Pigeon2 m_gyro = new Pigeon2(0); // TODO: install pigeon!
+  private final Pigeon2 m_gyro; // TODO: install pigeon!
   private final Encoder m_leftEncoder;
   private final Encoder m_rightEncoder;
   
@@ -35,14 +35,20 @@ public class DriveSubsystem extends SubsystemBase {
   private final DifferentialDriveKinematics m_kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(TRACK_WIDTH));
 
   public DriveSubsystem(WPI_VictorSPX left, WPI_VictorSPX right) {
+    super();
+    
+    m_gyro = new Pigeon2(0);
+  
     this.m_leftMotor = left;
     this.m_rightMotor = right;
   
     // Initializes a duty cycle encoder on DIO pins 0
-    this.m_leftEncoder = new Encoder(0,1); 
-    this.m_leftEncoder.setDistancePerPulse(Units.inchesToMeters(WHEEL_DIAMETER * Math.PI) / PULSES_PER_ROTATION);
-    this.m_rightEncoder = new Encoder(2,3);
-    this.m_rightEncoder.setDistancePerPulse(Units.inchesToMeters(WHEEL_DIAMETER * Math.PI) / PULSES_PER_ROTATION);
+    this.m_leftEncoder = new Encoder(2,3);
+    this.m_leftEncoder.reset();
+    //this.m_leftEncoder.setDistancePerPulse(Units.inchesToMeters(WHEEL_DIAMETER * Math.PI) / PULSES_PER_ROTATION);
+    this.m_rightEncoder = new Encoder(0,1);
+    this.m_rightEncoder.reset();
+    //this.m_rightEncoder.setDistancePerPulse(Units.inchesToMeters(WHEEL_DIAMETER * Math.PI) / PULSES_PER_ROTATION);
 
     m_odometry= new DifferentialDriveOdometry(
       new Rotation2d(),
@@ -83,6 +89,8 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   void updateDashboard() {
+    SmartDashboard.putNumber("Gyro Degrees", m_gyro.getAngle());
+    SmartDashboard.putNumber("Left count", m_leftEncoder.get());
     SmartDashboard.putNumber("Left Distance", m_leftEncoder.getDistance());
     SmartDashboard.putNumber("Left Velocity", m_leftEncoder.getRate());
     SmartDashboard.putNumber("Right Distance", m_rightEncoder.getDistance());
