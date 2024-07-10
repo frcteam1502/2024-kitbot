@@ -204,4 +204,14 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(m_myRobot);
   }
 
+  @Override
+  public void testPeriodic() {
+      
+     //m_FL.set(stick_l*0.1);
+     //m_FR.set(stick_l*0.1);
+     m_FL.set(0.1);
+     m_FR.set(0.1);
+      super.testPeriodic();
+  }
+
 }

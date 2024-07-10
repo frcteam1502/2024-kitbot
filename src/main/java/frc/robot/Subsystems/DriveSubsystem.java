@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -43,12 +44,12 @@ public class DriveSubsystem extends SubsystemBase {
     this.m_rightMotor = right;
   
     // Initializes a duty cycle encoder on DIO pins 0
-    this.m_leftEncoder = new Encoder(2,3);
+    this.m_leftEncoder = new Encoder(2,3,false, EncodingType.k4X);
     this.m_leftEncoder.reset();
-    //this.m_leftEncoder.setDistancePerPulse(Units.inchesToMeters(WHEEL_DIAMETER * Math.PI) / PULSES_PER_ROTATION);
-    this.m_rightEncoder = new Encoder(0,1);
+    this.m_leftEncoder.setDistancePerPulse(Units.inchesToMeters(WHEEL_DIAMETER * Math.PI) / PULSES_PER_ROTATION);
+    this.m_rightEncoder = new Encoder(0,1,false, EncodingType.k4X);
     this.m_rightEncoder.reset();
-    //this.m_rightEncoder.setDistancePerPulse(Units.inchesToMeters(WHEEL_DIAMETER * Math.PI) / PULSES_PER_ROTATION);
+    this.m_rightEncoder.setDistancePerPulse(Units.inchesToMeters(WHEEL_DIAMETER * Math.PI) / PULSES_PER_ROTATION);
 
     m_odometry= new DifferentialDriveOdometry(
       new Rotation2d(),
