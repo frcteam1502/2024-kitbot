@@ -121,7 +121,7 @@ public class Robot extends TimedRobot {
     // Make note go SHOOMP
     if(operator.getRawButton(5) == true && driveControll.getRawButton(6) == false){
 
-      Timer.delay(.75); 
+     // Timer.delay(.75); 
       System.out.println(waitTimer.get() * 10000);
       if(waitTimer.get() * 10000 == 0.0){
         waitTimer.start();
@@ -173,6 +173,8 @@ public class Robot extends TimedRobot {
       IntakeMotor.set(0);
       RollarMotor.set(0);
     }
+
+    //index 
 
     if (operator.getRawButton(2) == true) {
       IndexMotor.set(0.5);
