@@ -18,6 +18,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import frc.robot.Subsystems.DriveSubsystem;
+//import frc.robot.Subsystems.IntakeSubsystem;
 ;
 
 /**
@@ -168,10 +169,13 @@ public class Robot extends TimedRobot {
     if (operator.getRawButton(4) == true) {
       IntakeMotor.set(0.25);
       RollarMotor.set(0.25);
+      IndexMotor.set(0.5);
+      
     }
     else if (operator.getRawButton(4) == false) {
       IntakeMotor.set(0);
       RollarMotor.set(0);
+      IndexMotor.set(0);
     }
 
     //index 
