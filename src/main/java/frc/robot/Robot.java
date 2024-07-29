@@ -105,22 +105,24 @@ public class Robot extends TimedRobot {
     stick_r = driveControll.getRawAxis(5);
     stick_l = driveControll.getRawAxis(1);
 
-    m_FL.set(stick_l*0.8);
-    m_FR.set(stick_r*0.82);
-
-    //if (driveControll.getRawButton(1) == true); {
-    //m_FL.set(stick_l*0.5);
-    //m_FR.set(stick_r*0.52);
-      
+    m_driveSubsystem.tankDrive(stick_l*0.8, stick_r*0.82);
+   
+   if(driveControll.getRawButton(1) == true){
     
-    //  } else if(driveControll.getRawButton(1) == false) {
-    //  m_FL.set(stick_l*0.8);
-    //  m_FR.set(stick_r*0.82);
-    //}
+      m_FL.set(stick_l*0.25);
+      //m_FR.set(stick_r*0.27);
+      this.m_driveSubsystem.drive(new ChassisSpeeds(stick_l*0.25, 0,0));
+    }
+    else if(driveControll.getRawButton(1) == false){
+       m_FL.set(stick_l*0.8);
+      m_FR.set(stick_r*0.82);
+    }
+
+    
 
     //Right = 6, Left = 5
     // Make note go SHOOMP
-    if(operator.getRawButton(5) == true && driveControll.getRawButton(6) == false){
+    if(operator.getRawButton(5) == true && operator.getRawButton(6) == false){
 
      // Timer.delay(.75); 
       System.out.println(waitTimer.get() * 10000);
@@ -136,7 +138,7 @@ public class Robot extends TimedRobot {
       
     }
     //make note come in
-    else if(operator.getRawButton(6) == true && driveControll.getRawButton(5) == false){
+    else if(operator.getRawButton(6) == true && operator.getRawButton(5) == false){
       TopShooter.set(-0.2);
       BottemShooter.set(-0.2);
       //System.out.println(TopShooter.get());
@@ -152,17 +154,7 @@ public class Robot extends TimedRobot {
 
     // Make Churro move forward/backward/turnLeft/turnRight
 
-    if(driveControll.getRawButton(1) == true){
     
-      m_FL.set(stick_l*0.25);
-      //m_FR.set(stick_r*0.27);
-      this.m_driveSubsystem.drive(new ChassisSpeeds(stick_l*0.25, 0,0));
-    }
-    else if(driveControll.getRawButton(1) == false){
-       m_FL.set(stick_l*0.8);
-      m_FR.set(stick_r*0.82);
-    }
-
 
     //Set up intake to move note into robot
 
@@ -207,7 +199,8 @@ public class Robot extends TimedRobot {
     //System.out.println("Back Right Speed: " + m_BR.get());
     
     //m_myRobot.tankDrive(stick_l*0.3 stick_r*0.3);
-    SmartDashboard.putData(m_myRobot);
+
+    
   }
 
   @Override

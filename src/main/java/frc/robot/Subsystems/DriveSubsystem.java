@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,6 +34,7 @@ public class DriveSubsystem extends SubsystemBase {
   
   private Pose2d m_pose;
   private final DifferentialDriveOdometry m_odometry;
+  private final DifferentialDrive m_drive;
   private final DifferentialDriveKinematics m_kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(TRACK_WIDTH));
 
   public DriveSubsystem(WPI_VictorSPX left, WPI_VictorSPX right) {
@@ -50,7 +52,7 @@ public class DriveSubsystem extends SubsystemBase {
     this.m_rightEncoder = new Encoder(0,1,false, EncodingType.k4X);
     this.m_rightEncoder.reset();
     this.m_rightEncoder.setDistancePerPulse(Units.inchesToMeters(WHEEL_DIAMETER * Math.PI) / PULSES_PER_ROTATION);
-
+    m_drive = new DifferentialDrive(this.m_leftMotor, this.m_rightMotor);
     m_odometry= new DifferentialDriveOdometry(
       new Rotation2d(),
       this.m_leftEncoder.getDistance(),
@@ -90,12 +92,14 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   void updateDashboard() {
+    SmartDashboard.putData(m_drive);
     SmartDashboard.putNumber("Gyro Degrees", m_gyro.getAngle());
     SmartDashboard.putNumber("Left count", m_leftEncoder.get());
     SmartDashboard.putNumber("Left Distance", m_leftEncoder.getDistance());
     SmartDashboard.putNumber("Left Velocity", m_leftEncoder.getRate());
     SmartDashboard.putNumber("Right Distance", m_rightEncoder.getDistance());
     SmartDashboard.putNumber("Right Velocity", m_rightEncoder.getRate());
+    
   }
 
   public Pose2d getPose() {
@@ -116,5 +120,11 @@ public class DriveSubsystem extends SubsystemBase {
     m_leftMotor.set(wheelSpeeds.leftMetersPerSecond); //TODO convert convert m/s voltage
     m_rightMotor.set(wheelSpeeds.rightMetersPerSecond);
   }
+  public void tankDrive(DifferentialDriveWheelSpeeds wheelSpeeds){
+     tankDrive(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
+  }
 
+   public void tankDrive(double leftSpeed, double rightSpeed){
+      m_drive.tankDrive(leftSpeed, rightSpeed);
+  }
 }
