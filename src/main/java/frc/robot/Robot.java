@@ -13,12 +13,18 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import frc.robot.Subsystems.DriveSubsystem;
+import frc.robot.Subsystems.IntakeSubsystem;
 //import frc.robot.Subsystems.IntakeSubsystem;
+import frc.robot.commands.StartIntakeCommand;
+import frc.robot.commands.StopIntakeCommand;
 ;
 
 /**
@@ -27,11 +33,12 @@ import frc.robot.Subsystems.DriveSubsystem;
  */
 public class Robot extends TimedRobot {                                                                                                                                                                                                                                                                                                                                     
   private final DriveSubsystem m_driveSubsystem;
+  private final IntakeSubsystem m_intakeSubsystem;
   private final DifferentialDrive m_myRobot;
   
   private final Timer waitTimer = new Timer();
   private final Joystick driveControll;
-  private final Joystick operator;
+  private final CommandXboxController  operator;
 
   private final WPI_VictorSPX m_FL;
   private final WPI_VictorSPX m_BL;
@@ -40,9 +47,9 @@ public class Robot extends TimedRobot {
 
   private final CANSparkMax TopShooter;
   private final CANSparkMax BottemShooter;
-  private final CANSparkMax IntakeMotor;
-  private final CANSparkMax IndexMotor;
-  private final CANSparkMax RollarMotor;
+ // private final CANSparkMax IntakeMotor;
+  //private final CANSparkMax IndexMotor;
+  //private final CANSparkMax RollarMotor;
  
   
   double stick_r;
@@ -58,13 +65,14 @@ public class Robot extends TimedRobot {
     m_BR = new WPI_VictorSPX(1);
     TopShooter = new CANSparkMax(4, MotorType.kBrushless);
     BottemShooter = new CANSparkMax(3, MotorType.kBrushless);
-    IntakeMotor = new CANSparkMax(14, MotorType.kBrushless);
-    IndexMotor = new CANSparkMax(16, MotorType.kBrushless);
-    RollarMotor = new CANSparkMax(5, MotorType.kBrushless);
+   // IntakeMotor = new CANSparkMax(14, MotorType.kBrushless);
+    //IndexMotor = new CANSparkMax(16, MotorType.kBrushless);
+    //RollarMotor = new CANSparkMax(5, MotorType.kBrushless);
     m_driveSubsystem = new DriveSubsystem(m_FL, m_FR);
     m_myRobot = new DifferentialDrive(m_FL, m_FR);
     driveControll = new Joystick(0);
-    operator = new Joystick(1);
+    m_intakeSubsystem = new IntakeSubsystem(14, 5, 16);
+    operator = new CommandXboxController(1);
   }
 
   @Override
@@ -83,8 +91,8 @@ public class Robot extends TimedRobot {
     //TopShooter.set(0.7);
     m_FL.setInverted(true);
     m_BL.setInverted(true);
-    RollarMotor.setInverted(true);
-    IntakeMotor.setInverted(true);
+    //RollarMotor.setInverted(true);
+    //IntakeMotor.setInverted(true);
 
 
     //m_BL.set(0.5);
@@ -122,7 +130,7 @@ public class Robot extends TimedRobot {
 
     //Right = 6, Left = 5
     // Make note go SHOOMP
-    if(operator.getRawButton(5) == true && operator.getRawButton(6) == false){
+    /**if(operator.getRawButton(5) == true && operator.getRawButton(6) == false){
 
      // Timer.delay(.75); 
       System.out.println(waitTimer.get() * 10000);
@@ -150,7 +158,31 @@ public class Robot extends TimedRobot {
       waitTimer.stop();
       waitTimer.reset();
       //System.out.println(TopShooter.get());
-    }
+    }*/
+    //SHOOMP
+    operator.leftBumper() 
+      .onTrue(new InstantCommand(()->{
+        TopShooter.set(1);
+        BottemShooter.set(1); 
+      }))
+      .onFalse(new InstantCommand(()->{
+        TopShooter.set(0);
+        BottemShooter.set(0);
+     }));
+
+//INTAKE
+    operator.rightBumper() 
+      .onTrue(new InstantCommand(()->{
+        TopShooter.set(-0.2);
+        BottemShooter.set(-0.2); 
+    }))
+
+      .onFalse(new InstantCommand(()->{
+        TopShooter.set(0);
+        BottemShooter.set(0);
+     }));
+
+    
 
     // Make Churro move forward/backward/turnLeft/turnRight
 
@@ -158,40 +190,34 @@ public class Robot extends TimedRobot {
 
     //Set up intake to move note into robot
 
-    if (operator.getRawButton(4) == true) {
-      IntakeMotor.set(0.25);
-      RollarMotor.set(0.25);
-      IndexMotor.set(0.5);
-      
-    }
-    else if (operator.getRawButton(4) == false) {
-      IntakeMotor.set(0);
-      RollarMotor.set(0);
-      IndexMotor.set(0);
-    }
+    operator.y()
+      .onTrue(new StartIntakeCommand(m_intakeSubsystem))
+      .onFalse(new StopIntakeCommand(m_intakeSubsystem));
 
     //index 
-
-    if (operator.getRawButton(2) == true) {
-      IndexMotor.set(0.5);
-    }
-    else if (operator.getRawButton(3) == true) {
-      IndexMotor.set(-0.5); 
-    }
-    else{
-      IndexMotor.set(0); 
-    }
+    
+    operator.b() 
+    .onTrue(new InstantCommand(()->m_intakeSubsystem.indexIn()))
+    .onFalse(new InstantCommand(()->m_intakeSubsystem.indexStop()));
+   
+      operator.x()
+    .onTrue(new InstantCommand(()->m_intakeSubsystem.indexOut()))
+    .onFalse(new InstantCommand(()->m_intakeSubsystem.indexStop()));
+      
+    
 
     //AMP CONTROLL
+operator.a() 
+    .onTrue(new InstantCommand(()->{
+     TopShooter.set(0.1);
+      BottemShooter.set(0.1); 
+    }))
 
-    if (operator.getRawButton(1) == true) {
-      TopShooter.set(0.1);
-      BottemShooter.set(0.1);
-    }
-    else if (operator.getRawButton(1) == false) {
+    .onFalse(new InstantCommand(()->{
       TopShooter.set(0);
-      BottemShooter.set(0);   
-    }
+      BottemShooter.set(0); }));
+    
+   
 
     //System.out.println("Front Left Speed: " + m_FL.get());
     //System.out.println("Front Right Speed: " + m_FR.get());
