@@ -24,7 +24,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   private static double TRACK_WIDTH = 20.75;
   private static double WHEEL_DIAMETER = 6.0;
-  private static int PULSES_PER_ROTATION = 2048;
+  private static int PULSES_PER_ROTATION = 360;
 
   private final WPI_VictorSPX m_leftMotor;
   private final WPI_VictorSPX m_rightMotor;
@@ -47,10 +47,10 @@ public class DriveSubsystem extends SubsystemBase {
     this.m_rightMotor = right;
 
     // Initializes a duty cycle encoder on DIO pins 0
-    this.m_leftEncoder = new Encoder(2, 3, false, EncodingType.k4X);
+    this.m_leftEncoder = new Encoder(2, 3, true);
     this.m_leftEncoder.reset();
     this.m_leftEncoder.setDistancePerPulse(Units.inchesToMeters(WHEEL_DIAMETER * Math.PI) / PULSES_PER_ROTATION);
-    this.m_rightEncoder = new Encoder(0, 1, false, EncodingType.k4X);
+    this.m_rightEncoder = new Encoder(0, 1, false);
     this.m_rightEncoder.reset();
     this.m_rightEncoder.setDistancePerPulse(Units.inchesToMeters(WHEEL_DIAMETER * Math.PI) / PULSES_PER_ROTATION);
     m_drive = new DifferentialDrive(this.m_leftMotor, this.m_rightMotor);
