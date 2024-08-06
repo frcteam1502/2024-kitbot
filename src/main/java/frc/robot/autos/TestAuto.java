@@ -3,6 +3,7 @@ package frc.robot.autos;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.DriveSubsystem;
 import static edu.wpi.first.units.Units.*;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import edu.wpi.first.math.geometry.Pose2d;
 
@@ -12,6 +13,7 @@ public class TestAuto extends Command {
     public TestAuto(DriveSubsystem drive) {
         m_drive = drive;
         addRequirements(drive);
+
     }
 
     @Override
@@ -20,9 +22,30 @@ public class TestAuto extends Command {
         m_drive.resetPose(new Pose2d());
     }
 
-    @Override
-    public void execute() {
-        m_drive.tankDrive(-0.25, -0.25);
+    // @Override
+    // public void execute() {
+    // m_drive.tankDrive(-0.25, -0.25);
+
+    // }
+
+    public class ComplexAuto extends SequentialCommandGroup {
+
+        public ComplexAuto(DriveSubsystem m_drive) {
+
+            var pose = m_drive.getPose();
+            var distance = pose.getX();
+            var feet = Meters.of(distance).in(Feet);
+
+            if (feet <= 3) {
+                m_drive.tankDrive(-0.25, -0.25);
+            } else {
+
+                m_drive.tankDrive(0, 0);
+            }
+
+            
+        }
+
     }
 
     @Override
