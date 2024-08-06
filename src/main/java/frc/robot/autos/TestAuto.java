@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.DriveSubsystem;
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.geometry.Pose2d;
+
 public class TestAuto extends Command {
     private final DriveSubsystem m_drive;
 
@@ -15,12 +17,12 @@ public class TestAuto extends Command {
     @Override
     public void initialize() {
         m_drive.tankDrive(0, 0);
-        m_drive.resetPose(null);
+        m_drive.resetPose(new Pose2d());
     }
 
     @Override
     public void execute() {
-        m_drive.tankDrive(0.1, 0.1);
+        m_drive.tankDrive(-0.25, -0.25);
     }
 
     @Override

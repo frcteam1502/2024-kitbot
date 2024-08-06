@@ -58,7 +58,7 @@ public class DriveSubsystem extends SubsystemBase {
         new Rotation2d(),
         this.m_leftEncoder.getDistance(),
         this.m_rightEncoder.getDistance(),
-        new Pose2d(1.0, 2.0, new Rotation2d()));
+        new Pose2d(0, 0, new Rotation2d()));
 
     AutoBuilder.configureRamsete(
         this::getPose, // Robot pose supplier
@@ -108,7 +108,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void resetPose(Pose2d pose) {
-    m_odometry.resetPosition(m_gyro.getRotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance(), pose);
+    m_odometry.resetPosition(/*m_gyro.getRotation2d()*/ new Rotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance(), pose);
   }
 
   public ChassisSpeeds getCurrentSpeeds() {
@@ -127,6 +127,6 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void tankDrive(double leftSpeed, double rightSpeed) {
-    m_drive.tankDrive(leftSpeed, rightSpeed);
+    m_drive.tankDrive(leftSpeed, rightSpeed, false);
   }
 }

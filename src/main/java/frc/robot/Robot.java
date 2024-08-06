@@ -119,7 +119,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit(){
-    
+    var auto = getAutonomousCommand();
+    auto.schedule();
   }
 
   @Override
@@ -132,47 +133,20 @@ public class Robot extends TimedRobot {
     if (driveControll.getRawButton(1) == true) {
 
       m_FL.set(stick_l * 0.25);
-      // m_FR.set(stick_r*0.27);
+      //m_FR.set(stick_r*0.27);
       this.m_driveSubsystem.drive(new ChassisSpeeds(stick_l * 0.25, 0, 0));
     } else if (driveControll.getRawButton(1) == false) {
       m_FL.set(stick_l * 0.8);
       m_FR.set(stick_r * 0.82);
     }
 
+    
+    
+
     // Right = 6, Left = 5
     // Make note go SHOOMP
-    /**
-     * if(operator.getRawButton(5) == true && operator.getRawButton(6) == false){
-     * 
-     * // Timer.delay(.75);
-     * System.out.println(waitTimer.get() * 10000);
-     * if(waitTimer.get() * 10000 == 0.0){
-     * waitTimer.start();
-     * }
-     * 
-     * TopShooter.set(1);
-     * if(waitTimer.hasElapsed(1.0)){
-     * BottemShooter.set(1);
-     * IndexMotor.set(0.5);
-     * }
-     * 
-     * }
-     * //make note come in
-     * else if(operator.getRawButton(6) == true && operator.getRawButton(5) ==
-     * false){
-     * TopShooter.set(-0.2);
-     * BottemShooter.set(-0.2);
-     * //System.out.println(TopShooter.get());
-     * }
-     * else{
-     * TopShooter.set(0);
-     * BottemShooter.set(0);
-     * IndexMotor.set(0);
-     * waitTimer.stop();
-     * waitTimer.reset();
-     * //System.out.println(TopShooter.get());
-     * }
-     */
+    
+    
     // SHOOMP
     operator.leftBumper()
         .onTrue(new InstantCommand(() -> {
