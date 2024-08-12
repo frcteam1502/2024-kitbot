@@ -1,16 +1,15 @@
 package frc.robot.autos;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.DriveSubsystem;
 import static edu.wpi.first.units.Units.*;
 
-
-import edu.wpi.first.math.geometry.Pose2d;
-
-public class TestAuto extends Command {
+public class TurnAuto extends Command{
+    
     private final DriveSubsystem m_drive;
-
-    public TestAuto(DriveSubsystem drive) {
+    private double m_arcDistence;
+    public TurnAuto(DriveSubsystem drive) {
         m_drive = drive;
         addRequirements(drive);
 
@@ -20,6 +19,8 @@ public class TestAuto extends Command {
     public void initialize() {
         m_drive.tankDrive(0, 0);
         m_drive.resetPose(new Pose2d());
+        m_arcDistence = DriveSubsystem.TRACK_WIDTH *Math.PI/4;
+        
     }
 
     // @Override
@@ -31,12 +32,12 @@ public class TestAuto extends Command {
     @Override
     public void execute(){
 
-        var pose = m_drive.getPose();
+        var pose = m_drive.getTranslation();
             var distance = pose.getX();
             var feet = Meters.of(distance).in(Feet);
 
-            if (feet <= 3) {
-                m_drive.tankDrive(0.25, 0.25);
+            if (feet <= m_arcDistence) {
+                m_drive.tankDrive(0.40, -0.40);
             } else {
 
                 m_drive.tankDrive(0, 0);
@@ -54,7 +55,16 @@ public class TestAuto extends Command {
         var distance = pose.getX();
         var feet = Meters.of(distance).in(Feet);
 
-        return feet >= 3;
+       if (feet >= m_arcDistence){
+        return true;
+    
+       }
+       else{
+        return false;
+       }
     }
 
+
 }
+    
+

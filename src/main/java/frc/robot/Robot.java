@@ -24,6 +24,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import frc.robot.Subsystems.DriveSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
+import frc.robot.autos.ComplexAuto;
 import frc.robot.autos.TestAuto;
 //import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.commands.StartIntakeCommand;
@@ -92,8 +93,8 @@ public class Robot extends TimedRobot {
 
     // BottemShooter.follow(TopShooter);
     // TopShooter.set(0.7);
-    m_FL.setInverted(true);
-    m_BL.setInverted(true);
+    m_FR.setInverted(true);
+    m_BR.setInverted(true);
     // RollarMotor.setInverted(true);
     // IntakeMotor.setInverted(true);
 
@@ -104,6 +105,7 @@ public class Robot extends TimedRobot {
 
     m_chooser.setDefaultOption("Default Auto", new TestAuto(m_driveSubsystem));
     m_chooser.addOption("My Auto", new TestAuto(m_driveSubsystem));
+    m_chooser.addOption("ComplexAuto", new ComplexAuto(m_driveSubsystem));
     SmartDashboard.putData("Auto choices", m_chooser);
 
   }
@@ -125,8 +127,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    stick_r = driveControll.getRawAxis(5);
-    stick_l = driveControll.getRawAxis(1);
+    stick_r = -driveControll.getRawAxis(5);
+    stick_l = -driveControll.getRawAxis(1);
 
     m_driveSubsystem.tankDrive(stick_l * 0.8, stick_r * 0.82);
 

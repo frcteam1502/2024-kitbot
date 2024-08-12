@@ -2,6 +2,7 @@ package frc.robot.Subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -22,9 +23,9 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 public class DriveSubsystem extends SubsystemBase {
 
-  private static double TRACK_WIDTH = 20.75;
-  private static double WHEEL_DIAMETER = 6.0;
-  private static int PULSES_PER_ROTATION = 360;
+  public static double TRACK_WIDTH = 20.75;
+  public static double WHEEL_DIAMETER = 6.0;
+  public static int PULSES_PER_ROTATION = 360;
 
   private final WPI_VictorSPX m_leftMotor;
   private final WPI_VictorSPX m_rightMotor;
@@ -100,8 +101,12 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Left Velocity", m_leftEncoder.getRate());
     SmartDashboard.putNumber("Right Distance", m_rightEncoder.getDistance());
     SmartDashboard.putNumber("Right Velocity", m_rightEncoder.getRate());
-
+    SmartDashboard.putNumber("rotation", m_pose.getRotation().getDegrees());
   }
+
+ public Translation2d getTranslation(){
+  return new Translation2d(m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+ }
 
   public Pose2d getPose() {
     return m_odometry.getPoseMeters();
