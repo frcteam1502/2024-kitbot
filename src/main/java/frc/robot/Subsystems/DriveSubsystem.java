@@ -23,7 +23,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 public class DriveSubsystem extends SubsystemBase {
 
-  public static double TRACK_WIDTH = 20.75;
+  public static double TRACK_WIDTH = 23;
   public static double WHEEL_DIAMETER = 6.0;
   public static int PULSES_PER_ROTATION = 360;
 

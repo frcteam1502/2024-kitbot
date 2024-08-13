@@ -8,9 +8,9 @@ public class ComplexAuto extends SequentialCommandGroup {
     public ComplexAuto(DriveSubsystem m_drive) {
 
         addCommands(
-            new TestAuto(m_drive),
-            new TurnAuto(m_drive),
-            new TestAuto(m_drive));
+                new TestAuto(m_drive),
+                new TurnAuto(m_drive),
+                new TestAuto(m_drive));
 
     }
 }

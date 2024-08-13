@@ -5,10 +5,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.DriveSubsystem;
 import static edu.wpi.first.units.Units.*;
 
-public class TurnAuto extends Command{
-    
+public class TurnAuto extends Command {
+
     private final DriveSubsystem m_drive;
     private double m_arcDistence;
+
     public TurnAuto(DriveSubsystem drive) {
         m_drive = drive;
         addRequirements(drive);
@@ -19,8 +20,8 @@ public class TurnAuto extends Command{
     public void initialize() {
         m_drive.tankDrive(0, 0);
         m_drive.resetPose(new Pose2d());
-        m_arcDistence = DriveSubsystem.TRACK_WIDTH *Math.PI/4;
-        
+        m_arcDistence = DriveSubsystem.TRACK_WIDTH * Math.PI / 3 / 3;// 39.37;
+
     }
 
     // @Override
@@ -30,18 +31,18 @@ public class TurnAuto extends Command{
     // }
 
     @Override
-    public void execute(){
+    public void execute() {
 
         var pose = m_drive.getTranslation();
-            var distance = pose.getX();
-            var feet = Meters.of(distance).in(Feet);
+        var distance = pose.getX();
+        var feet = Meters.of(distance).in(Feet);
 
-            if (feet <= m_arcDistence) {
-                m_drive.tankDrive(0.40, -0.40);
-            } else {
+        if (feet <= m_arcDistence) {
+            m_drive.tankDrive(0.40, -0.40);
+        } else {
 
-                m_drive.tankDrive(0, 0);
-            }
+            m_drive.tankDrive(0, 0);
+        }
     }
 
     @Override
@@ -55,16 +56,12 @@ public class TurnAuto extends Command{
         var distance = pose.getX();
         var feet = Meters.of(distance).in(Feet);
 
-       if (feet >= m_arcDistence){
-        return true;
-    
-       }
-       else{
-        return false;
-       }
+        if (feet >= m_arcDistence) {
+            return true;
+
+        } else {
+            return false;
+        }
     }
 
-
 }
-    
-
