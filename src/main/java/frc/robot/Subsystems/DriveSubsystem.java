@@ -121,17 +121,23 @@ public class DriveSubsystem extends SubsystemBase {
     return m_kinematics.toChassisSpeeds(dds);
   }
 
+  double m_speedGain = 1.0;
+  public void setMaxOutput(double ratio) {
+    m_speedGain = ratio;
+  }
   public void drive(ChassisSpeeds chassisSpeeds) {
     DifferentialDriveWheelSpeeds wheelSpeeds = m_kinematics.toWheelSpeeds(chassisSpeeds);
     m_leftMotor.set(wheelSpeeds.leftMetersPerSecond); // TODO convert convert m/s voltage
     m_rightMotor.set(wheelSpeeds.rightMetersPerSecond);
   }
 
-  public void tankDrive(DifferentialDriveWheelSpeeds wheelSpeeds) {
-    tankDrive(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
-  }
+  // public void tankDrive(DifferentialDriveWheelSpeeds wheelSpeeds) {
+  //   tankDrive(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
+  // }
 
   public void tankDrive(double leftSpeed, double rightSpeed) {
-    m_drive.tankDrive(leftSpeed, rightSpeed, false);
+    leftSpeed *= m_speedGain;
+    rightSpeed *= m_speedGain;
+    m_drive.tankDrive(leftSpeed, rightSpeed, true);
   }
 }
