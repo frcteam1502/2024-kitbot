@@ -4,7 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -32,20 +32,23 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     @Override
-  public void periodic() {
-    if (Robot.isSimulation()) {
-        m_indexMotor.setVoltage(12 * m_indexMotor.get());
-        m_intakeMotor.setVoltage(12 * m_intakeMotor.get());
-        m_rollarMotor.setVoltage(12 * m_rollarMotor.get());
+    public void periodic() {
+        updateDashboard();
     }
-    updateDashboard();
-  }
 
-   void updateDashboard() {
-    SmartDashboard.putNumber("Intake Motor", m_intakeMotor.get());
-    SmartDashboard.putNumber("Index Motor", m_indexMotor.get());
-    SmartDashboard.putNumber("Rollar Motor", m_rollarMotor.get());
-  }
+    @Override
+    public void simulationPeriodic() {
+        var voltage = RobotController.getBatteryVoltage();
+        m_indexMotor.setVoltage(voltage * m_indexMotor.get());
+        m_intakeMotor.setVoltage(voltage * m_intakeMotor.get());
+        m_rollarMotor.setVoltage(voltage * m_rollarMotor.get());
+    }
+
+    void updateDashboard() {
+        SmartDashboard.putNumber("Intake Motor", m_intakeMotor.get());
+        SmartDashboard.putNumber("Index Motor", m_indexMotor.get());
+        SmartDashboard.putNumber("Rollar Motor", m_rollarMotor.get());
+    }
 
     public void startIntake() {
         m_intakeMotor.set(-0.25);

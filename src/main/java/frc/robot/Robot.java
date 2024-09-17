@@ -4,33 +4,21 @@
 
 package frc.robot;
 
-//import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.Joystick;
+
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
-
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.REVPhysicsSim;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import frc.robot.Subsystems.DriveSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.ShooterSubsystem;
 import frc.robot.autos.ComplexAuto;
-import frc.robot.autos.TestAuto;
-//import frc.robot.Subsystems.IntakeSubsystem;
-import frc.robot.commands.StartIntakeCommand;
-import frc.robot.commands.StopIntakeCommand;;
+import frc.robot.autos.TestAuto;;
 
 /**
  * This is a demo program showing the use of the DifferentialDrive class,
@@ -41,9 +29,7 @@ public class Robot extends TimedRobot {
   private final DriveSubsystem m_driveSubsystem;
   private final IntakeSubsystem m_intakeSubsystem;
   private final ShooterSubsystem m_shooterSubsystem;
-  //private final DifferentialDrive m_myRobot;
 
-  //private final Timer waitTimer = new Timer();
   private final CommandXboxController driver;
   private final CommandXboxController operator;
 
@@ -53,9 +39,6 @@ public class Robot extends TimedRobot {
   private final WPI_VictorSPX m_BR;
 
   private final SendableChooser<Command> m_chooser;
-
-  double stick_r;
-  double stick_l;
 
   public Robot() {
     // LEFT side
@@ -125,9 +108,7 @@ public class Robot extends TimedRobot {
       .onTrue(new InstantCommand(()->m_shooterSubsystem.intake()))
       .onFalse(new InstantCommand(()->m_shooterSubsystem.stop()));
 
-
     // Set up intake to move note into robot
-
     operator.y()
       .onTrue(new InstantCommand(()->m_intakeSubsystem.startIntake()))
       .onFalse(new InstantCommand(()->m_intakeSubsystem.stopIntake()));
@@ -171,9 +152,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {
-
-    // m_FL.set(stick_l*0.1);
-    // m_FR.set(stick_l*0.1);
     m_FL.set(0.1);
     m_FR.set(0.1);
     super.testPeriodic();
