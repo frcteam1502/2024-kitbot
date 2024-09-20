@@ -1,5 +1,6 @@
 package frc.robot.Subsystems;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -41,6 +42,8 @@ public class DriveSubsystem extends SubsystemBase {
   public static double TRACK_WIDTH = 23;
   public static double WHEEL_DIAMETER = 6.0;
   public static int PULSES_PER_ROTATION = 360;
+
+  private static double m_deadband = 0.02;
 
   private final WPI_VictorSPX m_leftMotor;
   private final WPI_VictorSPX m_rightMotor;
@@ -116,11 +119,25 @@ public class DriveSubsystem extends SubsystemBase {
       return m_simLeftDistance;
     }
   }
+  private double getLeftSpeed() {
+    if (Robot.isReal()) {
+      return m_leftEncoder.getRate();
+    } else {
+      return m_simLeftSpeed;
+    }
+  }
   private double getRightDistance() {
     if (Robot.isReal()) {
       return m_rightEncoder.getDistance();
     } else {
       return m_simRightDistance;
+    }
+  }
+  private double getRightSpeed() {
+    if (Robot.isReal()) {
+      return m_rightEncoder.getRate();
+    } else {
+      return m_simRightSpeed;
     }
   }
 
@@ -134,7 +151,8 @@ public class DriveSubsystem extends SubsystemBase {
   }
   void updatePose() {
     Twist2d twist = m_kinematics.toTwist2d(getLeftDistance(), getRightDistance());
-    m_gyro.m_rotation = Rotation2d.fromRadians(twist.dtheta);
+    // NED for gyros East (clockwise) is positive, opposite of Twist2D
+    m_gyro.m_rotation = Rotation2d.fromRadians(-twist.dtheta); 
     m_pose = m_odometry.update(m_gyro.getRotation2d(), getLeftDistance(), getRightDistance());
   }
 
@@ -143,9 +161,9 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Gyro Degrees", m_gyro.getAngle());
     SmartDashboard.putNumber("Left count", m_leftEncoder.get());
     SmartDashboard.putNumber("Left Distance", getLeftDistance());
-    SmartDashboard.putNumber("Left Velocity", m_leftEncoder.getRate());
+    SmartDashboard.putNumber("Left Velocity", getLeftSpeed());
     SmartDashboard.putNumber("Right Distance", getRightDistance());
-    SmartDashboard.putNumber("Right Velocity", m_rightEncoder.getRate());
+    SmartDashboard.putNumber("Right Velocity", getRightSpeed());
     SmartDashboard.putNumber("rotation", m_pose.getRotation().getDegrees());
   }
 
@@ -167,7 +185,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public ChassisSpeeds getCurrentSpeeds() {
-    var dds = new DifferentialDriveWheelSpeeds(m_leftEncoder.getRate(), m_rightEncoder.getRate());
+    var dds = new DifferentialDriveWheelSpeeds(getLeftSpeed(), getRightSpeed());
     return m_kinematics.toChassisSpeeds(dds);
   }
 
@@ -188,7 +206,20 @@ public class DriveSubsystem extends SubsystemBase {
   public void tankDrive(double leftSpeed, double rightSpeed) {
     leftSpeed *= m_speedGain;
     rightSpeed *= m_speedGain;
-    m_drive.tankDrive(leftSpeed, rightSpeed);
+    
+    // doing this here instead of inside tankDrive so the speed is available for simulation
+    leftSpeed = MathUtil.applyDeadband(leftSpeed, m_deadband);
+    rightSpeed = MathUtil.applyDeadband(rightSpeed, m_deadband);
+    leftSpeed = MathUtil.clamp(leftSpeed, -1.0, 1.0);
+    rightSpeed = MathUtil.clamp(rightSpeed, -1.0, 1.0);
+    // enhance fine control
+    leftSpeed = Math.copySign(leftSpeed * leftSpeed, leftSpeed);
+    rightSpeed = Math.copySign(rightSpeed * rightSpeed, rightSpeed);
+
+    m_simLeftSpeed = leftSpeed;
+    m_simRightSpeed = rightSpeed;
+
+    m_drive.tankDrive(leftSpeed, rightSpeed, false);
   }
   public void autoDrive(double leftSpeed, double rightSpeed) {
     m_simLeftSpeed = leftSpeed;

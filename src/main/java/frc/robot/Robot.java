@@ -65,16 +65,16 @@ public class Robot extends TimedRobot {
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
-    m_BL.follow(m_FL);
-    m_BR.follow(m_FR);
-
     m_FR.setInverted(true);
     m_BR.setInverted(true);
 
+    m_BL.follow(m_FL);
+    m_BR.follow(m_FR);
+
     m_chooser.setDefaultOption("Default Auto", new TestAuto(m_driveSubsystem));
-    m_chooser.addOption("Left", new ComplexAuto(m_driveSubsystem, 45));
+    m_chooser.addOption("Left", new ComplexAuto(m_driveSubsystem, -45));
     m_chooser.addOption("Center", new TestAuto(m_driveSubsystem));
-    m_chooser.addOption("Right", new ComplexAuto(m_driveSubsystem, -45));
+    m_chooser.addOption("Right", new ComplexAuto(m_driveSubsystem, 45));
     SmartDashboard.putData("Auto choices", m_chooser);
 
     configureBindings();
@@ -143,7 +143,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit(){
     var auto = getAutonomousCommand();
     if (Robot.isSimulation()) {
-      auto = new ComplexAuto(m_driveSubsystem, 45);
+      auto = new ComplexAuto(m_driveSubsystem, -45);
     }
     auto.schedule();
   }

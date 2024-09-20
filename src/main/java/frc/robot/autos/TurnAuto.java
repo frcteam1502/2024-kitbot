@@ -15,7 +15,7 @@ public class TurnAuto extends Command {
     public TurnAuto(DriveSubsystem drive, int degrees) {
         m_drive = drive;
         m_arcDistence = Inches.of(DriveSubsystem.TRACK_WIDTH * Math.PI * Math.abs(degrees) / 360);
-        sign = (degrees >= 0) ? 1.0 : -1.0;
+        sign = Math.signum(degrees); // (degrees >= 0) ? 1.0 : -1.0;
         addRequirements(drive);
     }
 
