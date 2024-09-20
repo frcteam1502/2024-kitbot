@@ -5,11 +5,11 @@ import frc.robot.Subsystems.DriveSubsystem;
 
 public class ComplexAuto extends SequentialCommandGroup {
 
-    public ComplexAuto(DriveSubsystem m_drive) {
+    public ComplexAuto(DriveSubsystem m_drive, int turn) {
 
         addCommands(
                 new TestAuto(m_drive),
-                new TurnAuto(m_drive),
+                new TurnAuto(m_drive, turn),
                 new TestAuto(m_drive));
 
     }

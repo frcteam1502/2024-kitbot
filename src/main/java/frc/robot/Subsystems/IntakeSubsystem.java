@@ -2,6 +2,7 @@ package frc.robot.Subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVPhysicsSim;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.RobotController;
@@ -21,6 +22,7 @@ public class IntakeSubsystem extends SubsystemBase{
         m_indexMotor = new CANSparkMax(indexID, MotorType.kBrushless);
         m_rollarMotor.setInverted(true);
         m_indexMotor.setInverted(true);
+        m_indexMotor.setIdleMode(IdleMode.kCoast);
 
         if (Robot.isSimulation()) {
             var sim = REVPhysicsSim.getInstance();
@@ -70,6 +72,9 @@ public class IntakeSubsystem extends SubsystemBase{
 
     public void indexIn(){
         m_indexMotor.set(0.5);
+    };
+    public void indexShoot(){
+        m_indexMotor.set(-1.0);
     };
 
     public void indexOut(){

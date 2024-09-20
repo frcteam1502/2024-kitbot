@@ -3,6 +3,7 @@ package frc.robot.Subsystems;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -23,13 +25,26 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 public class DriveSubsystem extends SubsystemBase {
 
+  private class Gyro {
+    Rotation2d m_rotation = new Rotation2d();
+    public Gyro(int id){
+    }
+    
+    public Rotation2d getRotation2d() {
+      return m_rotation;
+    }
+
+    public int getAngle() {
+      return 0;
+    }
+  }
   public static double TRACK_WIDTH = 23;
   public static double WHEEL_DIAMETER = 6.0;
   public static int PULSES_PER_ROTATION = 360;
 
   private final WPI_VictorSPX m_leftMotor;
   private final WPI_VictorSPX m_rightMotor;
-  private final Pigeon2 m_gyro; // TODO: install pigeon!
+  private final Gyro m_gyro; // TODO: install pigeon!
   private final Encoder m_leftEncoder;
   private final Encoder m_rightEncoder;
 
@@ -42,7 +57,7 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem(WPI_VictorSPX left, WPI_VictorSPX right) {
     super();
 
-    m_gyro = new Pigeon2(0);
+    m_gyro = new Gyro(0);
 
     this.m_leftMotor = left;
     this.m_rightMotor = right;
@@ -57,8 +72,8 @@ public class DriveSubsystem extends SubsystemBase {
     m_drive = new DifferentialDrive(this.m_leftMotor, this.m_rightMotor);
     m_odometry = new DifferentialDriveOdometry(
         new Rotation2d(),
-        this.m_leftEncoder.getDistance(),
-        this.m_rightEncoder.getDistance(),
+        this.getLeftDistance(),
+        this.getRightDistance(),
         new Pose2d(0, 0, new Rotation2d()));
 
     AutoBuilder.configureRamsete(
@@ -89,23 +104,53 @@ public class DriveSubsystem extends SubsystemBase {
     updateDashboard();
   }
 
+  double m_simLeftDistance;
+  double m_simRightDistance;
+  double m_simLeftSpeed;
+  double m_simRightSpeed;
+
+  private double getLeftDistance() {
+    if (Robot.isReal()) {
+      return m_leftEncoder.getDistance();
+    } else {
+      return m_simLeftDistance;
+    }
+  }
+  private double getRightDistance() {
+    if (Robot.isReal()) {
+      return m_rightEncoder.getDistance();
+    } else {
+      return m_simRightDistance;
+    }
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    var speedToDistance = .02 /*ms*/ * Units.inchesToMeters(WHEEL_DIAMETER * Math.PI);
+    var speedLeft = m_simLeftSpeed * 5.0; // assum 1.0 = 5 ms
+    var speedRight = m_simRightSpeed * 5.0; //m_rightMotor.get();
+    m_simLeftDistance += speedLeft * speedToDistance;
+    m_simRightDistance += speedRight * speedToDistance;
+  }
   void updatePose() {
-    m_pose = m_odometry.update(m_gyro.getRotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+    Twist2d twist = m_kinematics.toTwist2d(getLeftDistance(), getRightDistance());
+    m_gyro.m_rotation = Rotation2d.fromRadians(twist.dtheta);
+    m_pose = m_odometry.update(m_gyro.getRotation2d(), getLeftDistance(), getRightDistance());
   }
 
   void updateDashboard() {
     SmartDashboard.putData(m_drive);
     SmartDashboard.putNumber("Gyro Degrees", m_gyro.getAngle());
     SmartDashboard.putNumber("Left count", m_leftEncoder.get());
-    SmartDashboard.putNumber("Left Distance", m_leftEncoder.getDistance());
+    SmartDashboard.putNumber("Left Distance", getLeftDistance());
     SmartDashboard.putNumber("Left Velocity", m_leftEncoder.getRate());
-    SmartDashboard.putNumber("Right Distance", m_rightEncoder.getDistance());
+    SmartDashboard.putNumber("Right Distance", getRightDistance());
     SmartDashboard.putNumber("Right Velocity", m_rightEncoder.getRate());
     SmartDashboard.putNumber("rotation", m_pose.getRotation().getDegrees());
   }
 
  public Translation2d getTranslation(){
-  return new Translation2d(m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+  return new Translation2d(getLeftDistance(), getRightDistance());
  }
 
   public Pose2d getPose() {
@@ -113,7 +158,12 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void resetPose(Pose2d pose) {
-    m_odometry.resetPosition(/*m_gyro.getRotation2d()*/ new Rotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance(), pose);
+    m_simLeftDistance = 0;
+    m_simRightDistance = 0;
+    m_gyro.m_rotation = new Rotation2d();
+    m_leftEncoder.reset();
+    m_rightEncoder.reset();
+    m_odometry.resetPosition(m_gyro.getRotation2d(), getLeftDistance(), getRightDistance(), pose);
   }
 
   public ChassisSpeeds getCurrentSpeeds() {
@@ -138,6 +188,17 @@ public class DriveSubsystem extends SubsystemBase {
   public void tankDrive(double leftSpeed, double rightSpeed) {
     leftSpeed *= m_speedGain;
     rightSpeed *= m_speedGain;
-    m_drive.tankDrive(leftSpeed, rightSpeed, true);
+    m_drive.tankDrive(leftSpeed, rightSpeed);
+  }
+  public void autoDrive(double leftSpeed, double rightSpeed) {
+    m_simLeftSpeed = leftSpeed;
+    m_simRightSpeed = rightSpeed;
+    m_leftMotor.set(leftSpeed); // TODO convert convert m/s voltage
+    m_rightMotor.set(rightSpeed);
+    m_drive.feed();
+  }
+  
+  public void autoStop() {
+    autoDrive(0,0); //WARNING: will continue to roll
   }
 }

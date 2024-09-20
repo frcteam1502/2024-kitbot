@@ -72,8 +72,9 @@ public class Robot extends TimedRobot {
     m_BR.setInverted(true);
 
     m_chooser.setDefaultOption("Default Auto", new TestAuto(m_driveSubsystem));
-    m_chooser.addOption("My Auto", new TestAuto(m_driveSubsystem));
-    m_chooser.addOption("ComplexAuto", new ComplexAuto(m_driveSubsystem));
+    m_chooser.addOption("Left", new ComplexAuto(m_driveSubsystem, 45));
+    m_chooser.addOption("Center", new TestAuto(m_driveSubsystem));
+    m_chooser.addOption("Right", new ComplexAuto(m_driveSubsystem, -45));
     SmartDashboard.putData("Auto choices", m_chooser);
 
     configureBindings();
@@ -124,7 +125,7 @@ public class Robot extends TimedRobot {
       .onFalse(new InstantCommand(()->m_intakeSubsystem.indexStop()));
 
     operator.x()
-      .onTrue(new InstantCommand(()->m_intakeSubsystem.indexOut()))
+      .onTrue(new InstantCommand(()->m_intakeSubsystem.indexShoot()))
       .onFalse(new InstantCommand(()->m_intakeSubsystem.indexStop()));
   
   }
@@ -141,6 +142,9 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit(){
     var auto = getAutonomousCommand();
+    if (Robot.isSimulation()) {
+      auto = new ComplexAuto(m_driveSubsystem, 45);
+    }
     auto.schedule();
   }
 

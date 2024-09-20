@@ -33,6 +33,12 @@
   "NetworkTables": {
     "transitory": {
       "SmartDashboard": {
+        "Auto choices": {
+          "open": true,
+          "string[]##v_/SmartDashboard/Auto choices/options": {
+            "open": true
+          }
+        },
         "open": true
       }
     }
