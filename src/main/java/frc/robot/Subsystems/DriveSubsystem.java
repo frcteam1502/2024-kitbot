@@ -19,6 +19,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -35,8 +38,8 @@ public class DriveSubsystem extends SubsystemBase {
       return m_rotation;
     }
 
-    public int getAngle() {
-      return 0;
+    public double getAngle() {
+      return m_rotation.getDegrees();
     }
   }
   public static double TRACK_WIDTH = 23;
@@ -105,7 +108,8 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     updatePose();
     updateDashboard();
-  }
+    m_drive.feed();
+}
 
   double m_simLeftDistance;
   double m_simRightDistance;
@@ -158,13 +162,16 @@ public class DriveSubsystem extends SubsystemBase {
 
   void updateDashboard() {
     SmartDashboard.putData(m_drive);
+    SmartDashboard.putNumber("LeftStick", m_simLeftSpeed);
+    SmartDashboard.putNumber("RightStick", m_simRightSpeed);
     SmartDashboard.putNumber("Gyro Degrees", m_gyro.getAngle());
     SmartDashboard.putNumber("Left count", m_leftEncoder.get());
     SmartDashboard.putNumber("Left Distance", getLeftDistance());
     SmartDashboard.putNumber("Left Velocity", getLeftSpeed());
     SmartDashboard.putNumber("Right Distance", getRightDistance());
     SmartDashboard.putNumber("Right Velocity", getRightSpeed());
-    SmartDashboard.putNumber("rotation", m_pose.getRotation().getDegrees());
+    SmartDashboard.putNumber("getX", Meters.of(m_pose.getX()).in(Inches));
+    SmartDashboard.putNumber("arc", Meters.of(getTranslation().getX()).in(Inches));
   }
 
  public Translation2d getTranslation(){

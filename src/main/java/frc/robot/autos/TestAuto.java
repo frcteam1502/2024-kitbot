@@ -19,6 +19,7 @@ public class TestAuto extends Command {
     public void initialize() {
         m_drive.autoStop();
         m_drive.resetPose(new Pose2d());
+        System.out.println("Forward Auto Initialized");
     }
 
     @Override
@@ -44,7 +45,11 @@ public class TestAuto extends Command {
         var pose = m_drive.getPose();
         var distance = pose.getX();
         var feet = Meters.of(distance).in(Feet);
-        return feet >= 3;
+        if (feet >= 3) {
+            System.out.println("Forward Auto Finished");
+            return true;
+        }
+        return false;
     }
 
 }
