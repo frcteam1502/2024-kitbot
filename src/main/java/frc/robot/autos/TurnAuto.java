@@ -41,7 +41,7 @@ public class TurnAuto extends Command {
             done = true;
         }
         if (!done) {
-            m_drive.autoDrive(sign * -0.30, sign * 0.30);
+            m_drive.autoDrive(sign * -0.20, sign * 0.20);
         } else {
             m_drive.autoStop();
             done = true;

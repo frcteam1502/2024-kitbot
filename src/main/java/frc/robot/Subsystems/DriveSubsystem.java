@@ -148,7 +148,7 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     var speedToDistance = .02 /*ms*/ * Units.inchesToMeters(WHEEL_DIAMETER * Math.PI);
-    var speedLeft = m_simLeftSpeed * 5.0; // assum 1.0 = 5 ms
+    var speedLeft = m_simLeftSpeed * 5.0; // assum 1.0 = 5 m/s
     var speedRight = m_simRightSpeed * 5.0; //m_rightMotor.get();
     m_simLeftDistance += speedLeft * speedToDistance;
     m_simRightDistance += speedRight * speedToDistance;
@@ -165,7 +165,10 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("LeftStick", m_simLeftSpeed);
     SmartDashboard.putNumber("RightStick", m_simRightSpeed);
     SmartDashboard.putNumber("Gyro Degrees", m_gyro.getAngle());
+    SmartDashboard.putNumber("LeftSpeed", m_leftMotor.get());
+    SmartDashboard.putNumber("RightSpeed", m_rightMotor.get());
     SmartDashboard.putNumber("Left count", m_leftEncoder.get());
+    SmartDashboard.putNumber("Right count", m_rightEncoder.get());
     SmartDashboard.putNumber("Left Distance", getLeftDistance());
     SmartDashboard.putNumber("Left Velocity", getLeftSpeed());
     SmartDashboard.putNumber("Right Distance", getRightDistance());
