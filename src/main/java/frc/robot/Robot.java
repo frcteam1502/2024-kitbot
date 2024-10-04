@@ -18,7 +18,9 @@ import frc.robot.Subsystems.DriveSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.ShooterSubsystem;
 import frc.robot.autos.ComplexAuto;
-import frc.robot.autos.TestAuto;;
+import frc.robot.autos.TestAuto;
+
+import org.team1502.game.GameState;
 
 /**
  * This is a demo program showing the use of the DifferentialDrive class,
@@ -136,6 +138,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+    GameState.robotPeriodic();
+
     CommandScheduler.getInstance().run();
   }
 
