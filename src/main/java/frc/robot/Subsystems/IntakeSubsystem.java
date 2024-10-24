@@ -52,6 +52,7 @@ public class IntakeSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("Rollar Motor", m_rollarMotor.get());
     }
 
+    /** start the intake */
     public void startIntake() {
         m_intakeMotor.set(-0.25);
         m_rollarMotor.set(0.25);
